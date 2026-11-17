@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package lumi.v1;
+
+option go_package = "github.com/saurabh633/demo/services/gen/lumi/v1;lumiv1";
+
+import "lumi/v1/common.proto";
+
+service BookingsService {
+  rpc ListSlots(ListSlotsRequest) returns (ListSlotsResponse);
+  rpc CreateBooking(CreateBookingRequest) returns (Booking);
+  rpc GetBooking(GetBookingRequest) returns (Booking);
+}
+
+message ListSlotsRequest {
+  string date = 1;
+}
+
+message ListSlotsResponse {
+  repeated Slot slots = 1;
+}
+
+message CreateBookingRequest {
+  string service_id = 1;
+  string design_id = 2;
+  string date = 3;
+  string time = 4;
+  string name = 5;
+  string phone = 6;
+  string notes = 7;
+}
+
+message GetBookingRequest {
+  string id = 1;
+}

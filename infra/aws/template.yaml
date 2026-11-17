@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Lumi Nails public HTTP entry — API Gateway HTTP API routes all REST paths
+  to a thin REST→gRPC BFF Lambda (same contract as apps/lumi-nails/src/lib/api.ts).
+
+Parameters:
+  DesignsGrpcHost:
+    Type: String
+    Default: designs.lumi.internal:50051
+  CatalogGrpcHost:
+    Type: String
+    Default: catalog.lumi.internal:50056
+  BookingsGrpcHost:
+    Type: String
+    Default: bookings.lumi.internal:50053
+  ReviewsGrpcHost:
+    Type: String
+    Default: reviews.lumi.internal:50054
+  InquiriesGrpcHost:
+    Type: String
+    Default: inquiries.lumi.internal:50055
+
+Globals:
+  Function:
+    Timeout: 29
+    Runtime: nodejs22.x
+    MemorySize: 512
+
+Resources:
+  LumiHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+
+  LumiBffFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: lumi-nails-bff
+      Description: REST → gRPC BFF for Lumi Nails
+      CodeUri: ../../services/
+      Handler: dist/lambda.handler
+      Environment:
+        Variables:
+          DESIGNS_GRPC_HOST: !Ref DesignsGrpcHost
+          CATALOG_GRPC_HOST: !Ref CatalogGrpcHost
+          BOOKINGS_GRPC_HOST: !Ref BookingsGrpcHost
+          REVIEWS_GRPC_HOST: !Ref ReviewsGrpcHost
+          INQUIRIES_GRPC_HOST: !Ref InquiriesGrpcHost
+      Events:
+        ProxyAny:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref LumiHttpApi
+            Path: /{proxy+}
+            Method: ANY
+        ProxyRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref LumiHttpApi
+            Path: /
+            Method: ANY
+
+Outputs:
+  ApiEndpoint:
+    Description: Single public HTTP entry (set NEXT_PUBLIC_API_URL to this)
+    Value: !Sub "https://${LumiHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  HttpApiId:
+    Value: !Ref LumiHttpApi

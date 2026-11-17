@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package lumi.v1;
+
+option go_package = "github.com/saurabh633/demo/services/gen/lumi/v1;lumiv1";
+
+import "lumi/v1/common.proto";
+
+service DesignsService {
+  rpc ListDesigns(ListDesignsRequest) returns (ListDesignsResponse);
+  rpc GetDesign(GetDesignRequest) returns (Design);
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+}
+
+message ListDesignsRequest {
+  string category = 1;
+  string shape = 2;
+  string color = 3;
+  string search = 4;
+  bool featured = 5;
+  bool has_featured = 6;
+}
+
+message ListDesignsResponse {
+  repeated Design designs = 1;
+}
+
+message GetDesignRequest {
+  string id = 1;
+}
+
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated string categories = 1;
+}

@@ -5,15 +5,14 @@ This repository is organized as a lightweight monorepo.
 | Path | Description |
 |------|-------------|
 | `apps/lumi-nails` | **Lumi Nails** — premium Next.js (App Router) marketing + booking site |
+| `services/` | gRPC microservices + REST→gRPC BFF + Postgres SQL |
+| `infra/aws/` | AWS SAM (API Gateway HTTP API → BFF Lambda) |
+| `docker-compose.yml` | Local Postgres + all services + BFF on `:8080` |
 | `demo.zip` | Existing unrelated Laravel archive (preserved) |
 
-## Lumi Nails
+**Outside this monorepo:** `lumi-nails-local-proxy` — sibling project that exposes a **single local port (8080)** mimicking API Gateway. See that project’s README.
 
-Soft, luxurious nail extension & art studio site.
-
-**Stack:** Next.js App Router · TypeScript · Tailwind CSS · Framer Motion
-
-### Run locally
+## Lumi Nails website
 
 ```bash
 cd apps/lumi-nails
@@ -23,25 +22,36 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-From the repo root (npm workspaces):
+### Point at the real API (local)
 
 ```bash
-npm install
-npm run dev:lumi
-```
-
-### Build
-
-```bash
+# terminal A — outside monorepo proxy OR monorepo compose/BFF
+# terminal B
 cd apps/lumi-nails
-npm run build
-npm start
+echo 'NEXT_PUBLIC_API_URL=http://localhost:8080' > .env.local
+npm run dev
 ```
 
-### API
+Without `NEXT_PUBLIC_API_URL`, the site uses mocks in `src/lib/api.ts`.
 
-All network calls live in `apps/lumi-nails/src/lib/api.ts` and use `NEXT_PUBLIC_API_URL`.
+## Backend (gRPC)
 
-Until a backend exists, that file returns mock data with the same response shapes.
+Five domain services + BFF. Details: [`services/README.md`](services/README.md).
 
-See `apps/lumi-nails/.env.example`.
+```bash
+export DATABASE_URL=postgres://lumi:lumi@127.0.0.1:5432/lumi
+cd services && npm install && npm run seed && npm run dev:all
+```
+
+| Service | Port |
+|---------|------|
+| Designs gRPC | 50051 |
+| Catalog gRPC | 50056 |
+| Bookings gRPC | 50053 |
+| Reviews gRPC | 50054 |
+| Inquiries gRPC | 50055 |
+| **BFF / public REST** | **8080** |
+
+## AWS
+
+Single public entry via API Gateway — [`infra/aws/README.md`](infra/aws/README.md).

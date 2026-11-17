@@ -1,0 +1,40 @@
+{
+  "name": "@lumi/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "tsx src/shared/migrate.ts",
+    "seed": "tsx src/shared/migrate.ts --seed",
+    "dev:designs": "tsx watch src/designs/server.ts",
+    "dev:catalog": "tsx watch src/catalog/server.ts",
+    "dev:bookings": "tsx watch src/bookings/server.ts",
+    "dev:reviews": "tsx watch src/reviews/server.ts",
+    "dev:inquiries": "tsx watch src/inquiries/server.ts",
+    "dev:bff": "tsx watch src/bff/server.ts",
+    "start:designs": "tsx src/designs/server.ts",
+    "start:catalog": "tsx src/catalog/server.ts",
+    "start:bookings": "tsx src/bookings/server.ts",
+    "start:reviews": "tsx src/reviews/server.ts",
+    "start:inquiries": "tsx src/inquiries/server.ts",
+    "start:bff": "tsx src/bff/server.ts",
+    "dev:all": "concurrently -k -n designs,catalog,bookings,reviews,inquiries,bff -c magenta,cyan,yellow,green,blue,white \"npm:start:designs\" \"npm:start:catalog\" \"npm:start:bookings\" \"npm:start:reviews\" \"npm:start:inquiries\" \"npm:start:bff\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.6",
+    "@grpc/proto-loader": "^0.7.13",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.17.19",
+    "@types/pg": "^8.11.11",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}

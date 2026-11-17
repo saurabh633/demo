@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package lumi.v1;
+
+option go_package = "github.com/saurabh633/demo/services/gen/lumi/v1;lumiv1";
+
+service InquiriesService {
+  rpc CreateInquiry(CreateInquiryRequest) returns (CreateInquiryResponse);
+}
+
+message CreateInquiryRequest {
+  string name = 1;
+  string phone = 2;
+  string message = 3;
+}
+
+message CreateInquiryResponse {
+  bool ok = 1;
+}

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package lumi.v1;
+
+option go_package = "github.com/saurabh633/demo/services/gen/lumi/v1;lumiv1";
+
+message Design {
+  string id = 1;
+  string title = 2;
+  string image_url = 3;
+  string category = 4;
+  string shape = 5;
+  repeated string colors = 6;
+  double price = 7;
+  int32 duration_min = 8;
+  repeated string tags = 9;
+  bool is_featured = 10;
+}
+
+message ServiceItem {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 duration_min = 5;
+}
+
+message Slot {
+  string time = 1;
+  bool available = 2;
+}
+
+enum BookingStatus {
+  BOOKING_STATUS_UNSPECIFIED = 0;
+  BOOKING_STATUS_PENDING = 1;
+  BOOKING_STATUS_CONFIRMED = 2;
+  BOOKING_STATUS_CANCELLED = 3;
+}
+
+message Booking {
+  string id = 1;
+  string service_id = 2;
+  string design_id = 3;
+  string date = 4;
+  string time = 5;
+  string name = 6;
+  string phone = 7;
+  string notes = 8;
+  BookingStatus status = 9;
+}
+
+message Review {
+  string id = 1;
+  string name = 2;
+  int32 rating = 3;
+  string comment = 4;
+  string created_at = 5;
+}
