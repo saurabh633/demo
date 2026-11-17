@@ -9,9 +9,28 @@ import { adminRouter } from "./routes/admin/index.js";
 export function createApp() {
   const app = express();
 
+  const allowed = new Set(
+    [
+      WEB_ORIGIN,
+      "http://127.0.0.1:3000",
+      "http://localhost:3000",
+      ...(process.env.CORS_ORIGINS || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ].filter(Boolean),
+  );
+
   app.use(
     cors({
-      origin: [WEB_ORIGIN, "http://127.0.0.1:3000", "http://localhost:3000"],
+      origin(origin, cb) {
+        // Same-origin / curl / server-side: no Origin header
+        if (!origin || allowed.has(origin) || process.env.CORS_ALLOW_ALL === "1") {
+          cb(null, true);
+          return;
+        }
+        cb(null, false);
+      },
       credentials: true,
     }),
   );

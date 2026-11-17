@@ -31,19 +31,21 @@ npm run dev:api
 
 # 6) Website
 cd apps/lumi-nails
-cp .env.example .env.local   # NEXT_PUBLIC_API_URL=http://localhost:8080
+cp .env.example .env.local   # NEXT_PUBLIC_API_URL=/api-proxy (same-origin rewrite → :8080)
 npm run dev
 ```
 
 - Site: http://localhost:3000  
-- API health: http://localhost:8080/health  
+- API health: http://localhost:8080/health (also via http://localhost:3000/api-proxy/health)  
 - Admin: http://localhost:3000/admin/login  
   - Default: `admin@luminails.studio` / `lumi-admin-2026` (override via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
+Browser calls go to **`/api-proxy/*`** (Next rewrite → Express `:8080`), so DevTools Network shows same-origin fetches.
+
 ## API contract
 
-Matches `apps/lumi-nails/src/lib/api.ts` (no mocks when `NEXT_PUBLIC_API_URL` is set):
+Matches `apps/lumi-nails/src/lib/api.ts`:
 
 `GET /designs`, `GET /designs/:id`, `GET /categories`, `GET /services`, `GET /slots?date=`, `POST /bookings`, `GET /bookings/:id`, `POST /inquiries`, `GET /reviews`, `POST /reviews`, plus `/admin/*`.
 
-Uploads are served from `/uploads/designs/*`.
+Uploads are served from `/uploads/designs/*` (browser: `/api-proxy/uploads/...`).

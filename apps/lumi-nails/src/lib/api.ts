@@ -11,15 +11,16 @@ import type {
 } from "@/lib/types";
 import { mediaUrl } from "@/lib/media";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
+/**
+ * Browser calls should hit same-origin `/api-proxy` (Next rewrite → :8080)
+ * so Network tab shows XHR and Try Live works without reaching VM localhost:8080
+ * from the wrong machine. Absolute `http://localhost:8080` still works when set.
+ */
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "/api-proxy"
+).replace(/\/$/, "");
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  if (!API_URL) {
-    throw new Error(
-      "NEXT_PUBLIC_API_URL is not set. Start the API and set it to http://localhost:8080",
-    );
-  }
-
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
@@ -180,7 +181,6 @@ export const adminApi = {
     }>(`/admin/designs?page=${page}`);
   },
   async createDesign(form: FormData) {
-    if (!API_URL) throw new Error("NEXT_PUBLIC_API_URL is not set");
     const res = await fetch(`${API_URL}/admin/designs`, {
       method: "POST",
       body: form,
@@ -190,7 +190,6 @@ export const adminApi = {
     return withMedia(await res.json());
   },
   async updateDesign(id: string, form: FormData) {
-    if (!API_URL) throw new Error("NEXT_PUBLIC_API_URL is not set");
     const res = await fetch(`${API_URL}/admin/designs/${id}`, {
       method: "PUT",
       body: form,
