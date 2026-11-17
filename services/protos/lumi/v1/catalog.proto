@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package lumi.v1;
+
+option go_package = "github.com/saurabh633/demo/services/gen/lumi/v1;lumiv1";
+
+import "lumi/v1/common.proto";
+
+service CatalogService {
+  rpc ListServices(ListServicesRequest) returns (ListServicesResponse);
+}
+
+message ListServicesRequest {}
+
+message ListServicesResponse {
+  repeated ServiceItem services = 1;
+}

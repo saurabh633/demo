@@ -2,12 +2,15 @@
   "name": "demo-monorepo",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "services"
   ],
   "scripts": {
     "dev:lumi": "npm run dev --workspace=lumi-nails",
     "build:lumi": "npm run build --workspace=lumi-nails",
     "start:lumi": "npm run start --workspace=lumi-nails",
-    "lint:lumi": "npm run lint --workspace=lumi-nails"
+    "lint:lumi": "npm run lint --workspace=lumi-nails",
+    "backend:seed": "npm run seed --workspace=@lumi/backend",
+    "backend:dev": "npm run dev:all --workspace=@lumi/backend"
   }
 }

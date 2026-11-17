@@ -22,8 +22,10 @@ npm run lint
 
 Copy `.env.example` to `.env.local` if needed:
 
-- `NEXT_PUBLIC_API_URL` — backend base URL; leave empty for mocks in `src/lib/api.ts`
+- `NEXT_PUBLIC_API_URL` — backend base URL (use `http://localhost:8080` for the local BFF / `lumi-nails-local-proxy`); leave empty for mocks in `src/lib/api.ts`
 - `NEXT_PUBLIC_SITE_URL` — absolute site URL for metadata / Open Graph
+
+Backend docs: `../../services/README.md` and the sibling `lumi-nails-local-proxy` project.
 
 ## Structure
 

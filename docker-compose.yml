@@ -1,0 +1,102 @@
+# Monorepo-local stack (Postgres + gRPC services + BFF).
+# Prefer the external lumi-nails-local-proxy project for one-command local runs.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lumi
+      POSTGRES_PASSWORD: lumi
+      POSTGRES_DB: lumi
+    ports:
+      - "5432:5432"
+    volumes:
+      - lumi_pg:/var/lib/postgresql/data
+      - ./services/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./services/sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumi -d lumi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  designs:
+    build: ./services
+    command: ["npx", "tsx", "src/designs/server.ts"]
+    environment:
+      DATABASE_URL: postgres://lumi:lumi@postgres:5432/lumi
+      DESIGNS_GRPC_PORT: "50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50051:50051"
+
+  catalog:
+    build: ./services
+    command: ["npx", "tsx", "src/catalog/server.ts"]
+    environment:
+      DATABASE_URL: postgres://lumi:lumi@postgres:5432/lumi
+      CATALOG_GRPC_PORT: "50056"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50056:50056"
+
+  bookings:
+    build: ./services
+    command: ["npx", "tsx", "src/bookings/server.ts"]
+    environment:
+      DATABASE_URL: postgres://lumi:lumi@postgres:5432/lumi
+      BOOKINGS_GRPC_PORT: "50053"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50053:50053"
+
+  reviews:
+    build: ./services
+    command: ["npx", "tsx", "src/reviews/server.ts"]
+    environment:
+      DATABASE_URL: postgres://lumi:lumi@postgres:5432/lumi
+      REVIEWS_GRPC_PORT: "50054"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50054:50054"
+
+  inquiries:
+    build: ./services
+    command: ["npx", "tsx", "src/inquiries/server.ts"]
+    environment:
+      DATABASE_URL: postgres://lumi:lumi@postgres:5432/lumi
+      INQUIRIES_GRPC_PORT: "50055"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "50055:50055"
+
+  bff:
+    build: ./services
+    command: ["npx", "tsx", "src/bff/server.ts"]
+    environment:
+      BFF_PORT: "8080"
+      DESIGNS_GRPC_HOST: designs:50051
+      CATALOG_GRPC_HOST: catalog:50056
+      BOOKINGS_GRPC_HOST: bookings:50053
+      REVIEWS_GRPC_HOST: reviews:50054
+      INQUIRIES_GRPC_HOST: inquiries:50055
+    depends_on:
+      - designs
+      - catalog
+      - bookings
+      - reviews
+      - inquiries
+    ports:
+      - "8080:8080"
+
+volumes:
+  lumi_pg:
