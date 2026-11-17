@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import { STUDIO } from "@/lib/constants";
 import "./globals.css";
@@ -120,10 +118,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ToastProvider>
-          <Navbar />
-          <main className="min-h-[70vh]">{children}</main>
-          <Footer />
-          <WhatsAppFloat />
+          <SiteChrome>{children}</SiteChrome>
         </ToastProvider>
       </body>
     </html>

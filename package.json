@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "apps/*",
+    "packages/*",
     "services"
   ],
   "scripts": {
@@ -10,7 +11,9 @@
     "build:lumi": "npm run build --workspace=lumi-nails",
     "start:lumi": "npm run start --workspace=lumi-nails",
     "lint:lumi": "npm run lint --workspace=lumi-nails",
-    "backend:seed": "npm run seed --workspace=@lumi/backend",
+    "dev:api": "npm run dev --workspace=@lumi/api",
+    "seed": "npm run seed --workspace=@lumi/api",
+    "backend:seed": "npm run seed --workspace=@lumi/api",
     "backend:dev": "npm run dev:all --workspace=@lumi/backend"
   }
 }

@@ -1,57 +1,49 @@
-# demo monorepo
-
-This repository is organized as a lightweight monorepo.
+# demo monorepo — Lumi Nails
 
 | Path | Description |
 |------|-------------|
-| `apps/lumi-nails` | **Lumi Nails** — premium Next.js (App Router) marketing + booking site |
-| `services/` | gRPC microservices + REST→gRPC BFF + Postgres SQL |
-| `infra/aws/` | AWS SAM (API Gateway HTTP API → BFF Lambda) |
-| `docker-compose.yml` | Local Postgres + all services + BFF on `:8080` |
-| `demo.zip` | Existing unrelated Laravel archive (preserved) |
+| `apps/lumi-nails` | Next.js website + `/admin` panel |
+| `apps/api` | Express REST API (public + admin), uploads, seed |
+| `packages/shared` | Shared Zod schemas |
+| `packages/db` | Postgres client + schema |
+| `services/` | Earlier gRPC microservices + BFF (optional) |
+| `infra/aws/` | API Gateway SAM docs |
+| `demo.zip` | Preserved unrelated archive |
 
-**Outside this monorepo:** `lumi-nails-local-proxy` — sibling project that exposes a **single local port (8080)** mimicking API Gateway. See that project’s README.
-
-## Lumi Nails website
+## Quick start
 
 ```bash
-cd apps/lumi-nails
+# 1) Install (npm workspaces; pnpm also works if you prefer)
 npm install
-npm run dev
-```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-### Point at the real API (local)
-
-```bash
-# terminal A — outside monorepo proxy OR monorepo compose/BFF
-# terminal B
-cd apps/lumi-nails
-echo 'NEXT_PUBLIC_API_URL=http://localhost:8080' > .env.local
-npm run dev
-```
-
-Without `NEXT_PUBLIC_API_URL`, the site uses mocks in `src/lib/api.ts`.
-
-## Backend (gRPC)
-
-Five domain services + BFF. Details: [`services/README.md`](services/README.md).
-
-```bash
+# 2) Postgres
 export DATABASE_URL=postgres://lumi:lumi@127.0.0.1:5432/lumi
-cd services && npm install && npm run seed && npm run dev:all
+
+# 3) API env
+cp apps/api/.env.example apps/api/.env
+
+# 4) Seed (idempotent)
+npm run seed
+# equivalent: pnpm --filter @lumi/api seed
+
+# 5) API on :8080
+npm run dev:api
+
+# 6) Website
+cd apps/lumi-nails
+cp .env.example .env.local   # NEXT_PUBLIC_API_URL=http://localhost:8080
+npm run dev
 ```
 
-| Service | Port |
-|---------|------|
-| Designs gRPC | 50051 |
-| Catalog gRPC | 50056 |
-| Bookings gRPC | 50053 |
-| Reviews gRPC | 50054 |
-| Inquiries gRPC | 50055 |
-| **BFF / public REST** | **8080** |
+- Site: http://localhost:3000  
+- API health: http://localhost:8080/health  
+- Admin: http://localhost:3000/admin/login  
+  - Default: `admin@luminails.studio` / `lumi-admin-2026` (override via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
-## AWS
+## API contract
 
-Single public entry via API Gateway — [`infra/aws/README.md`](infra/aws/README.md).
+Matches `apps/lumi-nails/src/lib/api.ts` (no mocks when `NEXT_PUBLIC_API_URL` is set):
+
+`GET /designs`, `GET /designs/:id`, `GET /categories`, `GET /services`, `GET /slots?date=`, `POST /bookings`, `GET /bookings/:id`, `POST /inquiries`, `GET /reviews`, `POST /reviews`, plus `/admin/*`.
+
+Uploads are served from `/uploads/designs/*`.

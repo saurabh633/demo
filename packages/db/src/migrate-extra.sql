@@ -1,0 +1,4 @@
+-- Idempotent upgrades from earlier Lumi schemas
+ALTER TABLE designs ADD COLUMN IF NOT EXISTS category_id TEXT;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS approved BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE;
