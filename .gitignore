@@ -12,3 +12,7 @@ coverage/
 .turbo/
 *.tsbuildinfo
 services/dist/
+apps/api/uploads/**
+!apps/api/uploads/.gitkeep
+!apps/api/uploads/designs/
+!apps/api/uploads/designs/.gitkeep
